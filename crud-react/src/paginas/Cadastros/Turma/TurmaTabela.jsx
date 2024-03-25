@@ -2,6 +2,7 @@ import { Button, Flex, Input, Modal, Table, Form } from "antd";
 import { useEffect, useState } from "react";
 import TurmaService from "../../../services/TurmaService";
 import Title from "antd/es/typography/Title";
+import TurmaModal from "./TurmaModal";
 
 function TurmaTabela(){
 
@@ -36,8 +37,22 @@ function TurmaTabela(){
         console.log(registro);
     }
 
-    function excluir(registro){
-        console.log(registro);
+    function excluir({id}){
+        Modal.confirm({
+            title : "Tem certeza que deseja excluir a turma?",
+            content : "Você vai apagar a turma definitivamente!",
+            okText : "Sim, excluir",
+            okType : "danger",
+            cancelText : "Cancelar",
+            onOk(){
+                TurmaService.excluir(id).then(()=>{
+                    buscarTurmas();
+                }).catch(()=>{
+                    console.log("Falha ao excluir turma")
+                });
+            }
+        });
+
     }
 
     const columns = [
@@ -54,22 +69,7 @@ function TurmaTabela(){
             )         
         }
     ];
-
-    const [form] = Form.useForm();
-
-    const salvarTurma = () => {
-        form.validateFields().then(
-            async (values) => {
-                await TurmaService.salvar(values);
-                setAbrirModal(false);
-                form.resetFields();
-                buscarTurmas();
-                //window.location.reload();
-            }
-        ).catch(erro => {
-            console.log(erro);
-        })
-    }
+    
 
     return (
         <>
@@ -79,31 +79,9 @@ function TurmaTabela(){
             </Flex>
             <Table dataSource={turmas} columns={columns}/>   
 
-            <Modal
-                title="Turma" 
-                open={abrirModal}
-                onOk={()=>{setAbrirModal(false)}}
-                onCancel={()=>{setAbrirModal(false)}}
-                footer={(
-                    <>
-                        <Button onClick={()=>{setAbrirModal(false)}}>Cancelar</Button>
-                        <Button onClick={salvarTurma} type="primary">Cadastrar</Button>
-                    </>
-                )}>
-
-                    <Form form={form} layout="vertical" name="turmaForm">
-                        <Form.Item 
-                            name="nome"
-                            label="Nome da turma"
-                            rules={[{required : true, 
-                                     message : "Por favor, insira o nome da turma"}]}
-                            >
-                            <Input placeholder="Digite o nome da turma"/>    
-                        </Form.Item>
-                    </Form>
-                
-
-            </Modal>     
+            <TurmaModal abrirModal={abrirModal} 
+                        setAbrirModal={setAbrirModal} 
+                        buscarTurmas={buscarTurmas}/>     
         </>
     );
 }
