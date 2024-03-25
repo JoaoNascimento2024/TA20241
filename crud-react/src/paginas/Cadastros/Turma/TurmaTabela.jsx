@@ -8,17 +8,29 @@ function TurmaTabela(){
     const [turmas, setTurmas] = useState([]);
     const [abrirModal, setAbrirModal] = useState(false);
 
-    useEffect(() => {
-        const buscarTurmas = async () => {
-            try{
-                const turmas = await TurmaService.listar();
-                setTurmas(turmas);
-            }catch(error){
-                console.log("Erro ao buscar turmas", error);
-            }
+    const buscarTurmas = async () => {
+        try{
+            const turmas = await TurmaService.listar();
+            setTurmas(turmas);
+        }catch(error){
+            console.log("Erro ao buscar turmas", error);
         }
-        buscarTurmas();
-    },[turmas]);
+    }
+
+    useEffect(() => {buscarTurmas()},[]);
+
+    /*
+        //Ele vai chamar a função sempre que for necessário 
+        //renderizar o componente
+        useEffect(function(){}) 
+
+        //Ele vai chamar a função na primeira renderização do componente         
+        useEffect(function(){},[]) 
+
+        //Se houver mudança nas variáveis dependentes, ele chama a função
+        useEffect(function(){},[turmas, segundaVariavel]) 
+    
+    */
 
     function editar(registro){
         console.log(registro);
@@ -51,6 +63,8 @@ function TurmaTabela(){
                 await TurmaService.salvar(values);
                 setAbrirModal(false);
                 form.resetFields();
+                buscarTurmas();
+                //window.location.reload();
             }
         ).catch(erro => {
             console.log(erro);
