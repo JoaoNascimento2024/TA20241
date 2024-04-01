@@ -8,6 +8,7 @@ function TurmaTabela(){
 
     const [turmas, setTurmas] = useState([]);
     const [abrirModal, setAbrirModal] = useState(false);
+    const [turmaEditada, setTurmaEditada] = useState(null);
 
     const buscarTurmas = async () => {
         try{
@@ -33,8 +34,9 @@ function TurmaTabela(){
     
     */
 
-    function editar(registro){
-        console.log(registro);
+    function editar(turma){
+        setTurmaEditada(turma);
+        setAbrirModal(true);
     }
 
     function excluir({id}){
@@ -47,8 +49,9 @@ function TurmaTabela(){
             onOk(){
                 TurmaService.excluir(id).then(()=>{
                     buscarTurmas();
+                    //setTurmas(turmas.filter(turma => turma.id !== id));
                 }).catch(()=>{
-                    console.log("Falha ao excluir turma")
+                    console.log("Falha ao excluir turma");
                 });
             }
         });
@@ -75,13 +78,15 @@ function TurmaTabela(){
         <>
             <Title level={3}>Turmas</Title>
             <Flex justify="end" style={{marginBottom : 10}}>
-                <Button type="primary" onClick={()=>{setAbrirModal(true)}}>Novo</Button>
+                <Button type="primary" onClick={()=>{setTurmaEditada(null); setAbrirModal(true);}}>Novo</Button>
             </Flex>
             <Table dataSource={turmas} columns={columns}/>   
 
             <TurmaModal abrirModal={abrirModal} 
                         setAbrirModal={setAbrirModal} 
-                        buscarTurmas={buscarTurmas}/>     
+                        buscarTurmas={buscarTurmas}
+                        turmaEditada={turmaEditada}
+                        setTurmaEditada={setTurmaEditada}/>     
         </>
     );
 }

@@ -33,8 +33,9 @@ router.post("/", (req, res) => {
     executarComandosSQL(sql,[nome],res,"Erro na inserção de turma");
 });
 
-router.put("/", (req, res) => {
-    const {nome, id} = req.body;
+router.put("/:id", (req, res) => {
+    let id = req.params.id;
+    const {nome} = req.body;
     let sql = "update turma set nome = ? where id = ?";
     executarComandosSQL(sql,[nome, id],res,"Erro na update de turma");
 });

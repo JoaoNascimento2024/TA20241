@@ -1,19 +1,39 @@
 import { Button, Form, Input, Modal } from "antd";
 import TurmaService from "../../../services/TurmaService";
+import { useEffect } from "react";
 
 
 
-const TurmaModal = ({abrirModal, setAbrirModal, buscarTurmas}) => {
+const TurmaModal = ({abrirModal, 
+                     setAbrirModal, 
+                     buscarTurmas, 
+                     turmaEditada, 
+                     setTurmaEditada}) => {
 
     const [form] = Form.useForm();
+
+    useEffect(()=>{
+        if (turmaEditada && abrirModal){
+            form.setFieldsValue({
+                nome : turmaEditada.nome
+            });
+        }else{
+            form.resetFields();
+        }
+    },[turmaEditada, abrirModal]);
 
     const salvarTurma = () => {
         form.validateFields().then(
             async (values) => {
-                await TurmaService.salvar(values);
+                if (turmaEditada){
+                    await TurmaService.atualizar(turmaEditada.id, values);
+                }else{
+                    await TurmaService.salvar(values);
+                }
                 setAbrirModal(false);
                 form.resetFields();
                 buscarTurmas();
+                setTurmaEditada(null);
                 //Outra opção
                 //window.location.reload();
             }
@@ -32,7 +52,9 @@ const TurmaModal = ({abrirModal, setAbrirModal, buscarTurmas}) => {
                 footer={(
                     <>
                         <Button onClick={()=>{setAbrirModal(false)}}>Cancelar</Button>
-                        <Button onClick={salvarTurma} type="primary">Cadastrar</Button>
+                        <Button onClick={salvarTurma} type="primary">
+                            {turmaEditada ? "Atualizar" : "Cadastrar" }
+                        </Button>
                     </>
                 )}>
 

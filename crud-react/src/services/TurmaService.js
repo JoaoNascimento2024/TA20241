@@ -39,6 +39,21 @@ const TurmaService = {
         }catch(erro){
             throw erro;
         }
+    },
+    atualizar : async (id, turma) => {
+        try {
+            const resposta = await fetch(`${BASE_URL_TURMAS}/${id}`,
+                { 
+                method : "PUT",
+                headers : {"Content-type" : "application/json"},
+                body : JSON.stringify(turma) 
+            });
+            if (!resposta.ok){
+                throw new Error("Erro ao atualizar turma");
+            }
+        }catch(erro){
+            throw erro;
+        }
     }
 }
 
